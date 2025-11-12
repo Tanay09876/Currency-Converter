@@ -39,29 +39,60 @@ const ConverterForm = () => {
     setToCurrency(fromCurrency);
   };
 
-  const getExchangeRate = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        `${API_URL}/${API_KEY}/pair/${fromCurrency}/${toCurrency}`
-      );
-      if (!response.ok) throw new Error("Failed to fetch rate");
+  // const getExchangeRate = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await fetch(
+  //       `${API_URL}/${API_KEY}/pair/${fromCurrency}/${toCurrency}`
+  //     );
+  //     if (!response.ok) throw new Error("Failed to fetch rate");
 
-      const data = await response.json();
-      const rate = data.conversion_rate;
-      if (!rate) {
-        setResult("Exchange rate not available!");
-        return;
-      }
-      const converted = (rate * amount).toFixed(2);
-      setResult(`${amount} ${fromCurrency} = ${converted} ${toCurrency}`);
-    } catch (error) {
-      console.error("API Error:", error);
-      setResult("Something went wrong while fetching rates!");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     const data = await response.json();
+  //     const rate = data.conversion_rate;
+  //     if (!rate) {
+  //       setResult("Exchange rate not available!");
+  //       return;
+  //     }
+  //     const converted = (rate * amount).toFixed(2);
+  //     setResult(`${amount} ${fromCurrency} = ${converted} ${toCurrency}`);
+  //   } catch (error) {
+  //     console.error("API Error:", error);
+  //     setResult("Something went wrong while fetching rates!");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+
+
+  const getExchangeRate = async () => {
+  setIsLoading(true);
+  try {
+    const API_KEY = import.meta.env.VITE_API_KEY || "4dbc57979a8e3b10b8d80781";
+    const API_URL = import.meta.env.VITE_API_URL || "https://v6.exchangerate-api.com/v6";
+
+    const endpoint = `${API_URL}/${API_KEY}/pair/${fromCurrency}/${toCurrency}`;
+    console.log("Fetching:", endpoint);
+
+    const response = await fetch(endpoint);
+    if (!response.ok) throw new Error("Failed to fetch rate");
+
+    const data = await response.json();
+    console.log("API Response:", data);
+
+    if (data.result !== "success") throw new Error(data["error-type"]);
+
+    const rate = data.conversion_rate;
+    const converted = (rate * amount).toFixed(2);
+    setResult(`${amount} ${fromCurrency} = ${converted} ${toCurrency}`);
+  } catch (error) {
+    console.error("API Error:", error);
+    setResult("Something went wrong while fetching rates!");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
