@@ -24,7 +24,7 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: #030728 url("bg.png") no-repeat center center/cover;
+  background: #030728 url("bg.png") no-repeat center center cover;
 }
 
 #root {
